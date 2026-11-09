@@ -1951,6 +1951,20 @@ void NetworkMap::updateLinks()
             vm->setGlobalVariable("$endpoint1", endpoint1->createNXSLObject(vm));
          if (endpoint2 != nullptr)
             vm->setGlobalVariable("$endpoint2", endpoint2->createNXSLObject(vm));
+
+         // EXPERIMENTAL: send something in the script we can use to identify which interface.
+         // this is required for any nodes that have more than one link in between to tell them apart.
+         // link would be ideal...but link->createNXSLObject(vm) doesn't work, so let's try just the names of the interfaces.
+         shared_ptr<NetObj> interface1 = FindObjectById(link->getInterface1());
+         shared_ptr<NetObj> interface2 = FindObjectById(link->getInterface2());
+
+         if (interface1 != nullptr)
+            vm->setGlobalVariable("$interface1", vm->createValue(interface1->getName()));
+
+         if (interface2 != nullptr)
+            vm->setGlobalVariable("$interface2", vm->createValue(interface2->getName()));
+         // end of experimental bit
+
          if (vm->run())
          {
             NXSL_Value *result = vm->getResult();
